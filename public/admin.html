@@ -91,7 +91,7 @@
           <input type="password" id="password" placeholder="管理员密码" required autocomplete="current-password"
                  class="w-full bg-paper border border-line rounded-xl px-4 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
           <button type="submit"
-                  class="w-full bg-cta hover:bg-cta-strong text-white font-medium py-3 rounded-xl transition-colors duration-200 cursor-pointer tracking-[0.15em]">
+                  class="w-full bg-media hover:bg-media-strong text-white font-medium py-3 rounded-xl transition-colors duration-200 cursor-pointer tracking-[0.15em]">
             登 录
           </button>
           <p id="login-error" class="text-danger text-sm text-center hidden">密码错误，请重试</p>
@@ -107,6 +107,7 @@
         <div class="flex bg-white border border-line rounded-2xl p-1.5 shadow-sm">
           <button type="button" data-admin-product="hub" class="admin-tab active px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOhub</button>
           <button type="button" data-admin-product="media" class="admin-tab px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOMEDIA</button>
+          <button type="button" data-admin-product="legal" class="admin-tab px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">法律文档</button>
         </div>
       </div>
 
@@ -197,31 +198,6 @@
                   + 添加 iOS 更新日志
                 </button>
                 <div id="ios-cl-list" class="space-y-3 mt-3"></div>
-              </div>
-            </div>
-
-            <!-- 法律文档：用户协议 / 隐私政策（OTTOhub 全平台共用内容） -->
-            <div class="lg:col-span-2 bg-white border border-line rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
-              <div class="flex items-center gap-3 mb-6">
-                <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-hub/10 text-hub-strong flex items-center justify-center">
-                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-                </div>
-                <div>
-                  <h3 class="font-heading text-lg font-semibold">法律文档</h3>
-                  <p class="mono text-[10px] uppercase tracking-[0.2em] text-muted">OTTOHUB · 用户协议 / 隐私政策（全平台共用）</p>
-                </div>
-              </div>
-              <div class="grid lg:grid-cols-2 gap-3">
-                <div>
-                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">用户协议内容</label>
-                  <textarea id="hub-user-agreement" rows="10" placeholder="输入用户协议内容，支持换行…"
-                            class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200 leading-relaxed resize-y"></textarea>
-                </div>
-                <div>
-                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">隐私政策内容</label>
-                  <textarea id="hub-privacy-policy" rows="10" placeholder="输入隐私政策内容，支持换行…"
-                            class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200 leading-relaxed resize-y"></textarea>
-                </div>
               </div>
             </div>
           </div>
@@ -328,27 +304,56 @@
               <div id="cross-cl-list" class="space-y-3 mt-3"></div>
             </div>
           </div>
+        </div>
 
-          <!-- 法律文档：用户协议 / 隐私政策（OTTOMEDIA 全平台共用内容） -->
-          <div class="lg:col-span-2 bg-white border border-media/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+        <!-- ============ 法律文档 ============ -->
+        <div id="legal-panel" class="admin-panel hidden grid lg:grid-cols-2 gap-6">
+
+          <!-- OTTOhub 法律文档 -->
+          <div class="bg-white border border-line rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-hub/10 text-hub-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">法律文档</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-muted">OTTOHUB · 用户协议 / 隐私政策</p>
+              </div>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">用户协议内容</label>
+                <textarea id="hub-user-agreement" rows="10" placeholder="输入用户协议内容"
+                          class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200 leading-relaxed resize-y"></textarea>
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">隐私政策内容</label>
+                <textarea id="hub-privacy-policy" rows="10" placeholder="输入隐私政策内容"
+                          class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200 leading-relaxed resize-y"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- OTTOMEDIA 法律文档 -->
+          <div class="bg-white border border-media/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
             <div class="flex items-center gap-3 mb-6">
               <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-media/10 text-media-strong flex items-center justify-center">
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
               </div>
               <div>
                 <h3 class="font-heading text-lg font-semibold">法律文档</h3>
-                <p class="mono text-[10px] uppercase tracking-[0.2em] text-media-strong">OTTOMEDIA · 用户协议 / 隐私政策（全平台共用）</p>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-media-strong">OTTOMEDIA · 用户协议 / 隐私政策</p>
               </div>
             </div>
             <div class="grid lg:grid-cols-2 gap-3">
               <div>
                 <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">用户协议内容</label>
-                <textarea id="media-user-agreement" rows="10" placeholder="输入用户协议内容，支持换行…"
+                <textarea id="media-user-agreement" rows="10" placeholder="输入用户协议内容"
                           class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200 leading-relaxed resize-y"></textarea>
               </div>
               <div>
                 <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">隐私政策内容</label>
-                <textarea id="media-privacy-policy" rows="10" placeholder="输入隐私政策内容，支持换行…"
+                <textarea id="media-privacy-policy" rows="10" placeholder="输入隐私政策内容"
                           class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200 leading-relaxed resize-y"></textarea>
               </div>
             </div>
@@ -358,7 +363,7 @@
         <!-- 保存栏 -->
         <div class="sticky bottom-4 mt-8 rounded-2xl bg-white/90 backdrop-blur border border-line shadow-[0_18px_44px_-24px_rgba(15,43,61,.35)] p-4 flex items-center gap-3 flex-wrap">
           <button type="submit"
-                  class="bg-cta hover:bg-cta-strong text-white font-medium py-2.5 px-7 rounded-xl transition-colors duration-200 cursor-pointer tracking-wide">
+                  class="bg-media hover:bg-media-strong text-white font-medium py-2.5 px-7 rounded-xl transition-colors duration-200 cursor-pointer tracking-wide">
             保存全部更改
           </button>
           <a href="/" target="_blank"
@@ -430,6 +435,7 @@
         const key = btn.dataset.adminProduct;
         document.getElementById('hub-panel').classList.toggle('hidden', key !== 'hub');
         document.getElementById('media-panel').classList.toggle('hidden', key !== 'media');
+        document.getElementById('legal-panel').classList.toggle('hidden', key !== 'legal');
       });
     });
 
