@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTTOhub · OTTOMEDIA - 下载中心</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,400;1,6..96,500;1,6..96,600&family=Jost:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['"Bodoni Moda"', 'serif'],
+            body: ['Jost', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'monospace'],
+          },
+          colors: {
+            ink: '#0F2B3D',
+            'ink-soft': '#47566B',
+            muted: '#8593A7',
+            line: '#E4E9F0',
+            paper: '#F6F7F9',
+            hub: '#0EA5E9',
+            'hub-strong': '#0369A1',
+            cta: '#F97316',
+            'cta-strong': '#EA580C',
+            media: '#10B981',
+            'media-strong': '#047857',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .rise { animation: rise .6s cubic-bezier(.22, .61, .36, 1) both; }
+
+    .dots-bg {
+      background-image: radial-gradient(rgba(15, 43, 61, .10) 1px, transparent 1px);
+      background-size: 22px 22px;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 100%);
+    }
+    .noise {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .ghost {
+      position: absolute;
+      right: -2rem;
+      top: -4.5rem;
+      font-family: "Bodoni Moda", serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 26rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: rgba(14, 165, 233, .07);
+      user-select: none;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .product-tab {
+      border-width: 2px;
+      border-color: #E4E9F0;
+      background: rgba(255, 255, 255, .6);
+      transition: border-color .25s, background .25s, box-shadow .25s, transform .25s;
+    }
+    .product-tab:hover { transform: translateY(-2px); }
+    .product-tab.active {
+      border-color: var(--c-accent, #0EA5E9);
+      background: #fff;
+      box-shadow: 0 20px 44px -24px rgba(15, 43, 61, .35);
+    }
+    .cl-tab {
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .cl-tab.active {
+      background: #fff;
+      color: #0F2B3D;
+      box-shadow: 0 1px 3px rgba(15, 43, 61, .12);
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-body min-h-screen antialiased overflow-x-hidden">
+
+  <!-- 环境背景：点阵 + 色晕 + 噪点 -->
+  <div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
+    <div class="absolute inset-0 dots-bg"></div>
+    <div class="absolute -top-48 -left-48 w-[40rem] h-[40rem] rounded-full bg-hub/10 blur-3xl"></div>
+    <div class="absolute top-[30%] -right-48 w-[34rem] h-[34rem] rounded-full bg-media/10 blur-3xl"></div>
+    <div class="absolute inset-0 noise opacity-[0.035]"></div>
+  </div>
+
+  <!-- 顶栏 -->
+  <header class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pt-8 flex items-center justify-between">
+    <a href="/" class="flex items-baseline gap-3">
+      <span class="font-heading text-2xl font-semibold italic tracking-tight">OTTOhub</span>
+      <span class="hidden sm:block mono text-[10px] tracking-[0.3em] uppercase text-muted">Download Center</span>
+    </a>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pb-24">
+
+    <!-- Hero -->
+    <section class="relative pt-16 md:pt-24 pb-14">
+      <div class="ghost hidden lg:block" aria-hidden="true">OTTO</div>
+      <h1 class="rise mt-5 font-heading font-semibold italic tracking-tight leading-[0.95] text-6xl sm:text-7xl lg:text-8xl" style="animation-delay:.12s">
+        <span class="block">OTTO<span class="text-hub">hub</span></span>
+        <span class="block text-ink/55">OTTO<span class="text-media">MEDIA</span></span>
+      </h1>
+
+      <p class="rise mt-7 text-ink-soft text-lg max-w-md leading-relaxed" style="animation-delay:.2s">我阐述你的梦</p>
+
+      <!-- 产品切换 -->
+      <div class="rise mt-12 grid sm:grid-cols-2 gap-4 max-w-2xl" style="animation-delay:.28s">
+        <button type="button" data-product="hub" class="product-tab relative text-left rounded-2xl p-5 cursor-pointer">
+          <span class="absolute -top-2.5 left-5 mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-0.5 rounded-full bg-hub opacity-0 transition-opacity duration-200 current-chip">当前</span>
+          <div class="flex items-center justify-between">
+            <span class="font-heading text-2xl font-semibold italic">OTTOhub</span>
+            <svg class="w-5 h-5 text-muted transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg>
+          </div>
+          <p class="mt-2 mono text-[10px] tracking-[0.22em] uppercase text-muted">Android · iOS</p>
+        </button>
+
+        <button type="button" data-product="media" class="product-tab relative text-left rounded-2xl p-5 cursor-pointer">
+          <span class="absolute -top-2.5 left-5 mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-0.5 rounded-full bg-media opacity-0 transition-opacity duration-200 current-chip">当前</span>
+          <div class="flex items-center justify-between">
+            <span class="font-heading text-2xl font-semibold italic">OTTOMEDIA</span>
+            <svg class="w-5 h-5 text-muted transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg>
+          </div>
+          <p class="mt-2 mono text-[10px] tracking-[0.22em] uppercase text-muted">iOS · macOS · Android · Windows</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- 产品面板 -->
+    <section id="product-panel" class="rise" style="animation-delay:.34s">
+      <div class="rounded-3xl bg-white border border-line shadow-[0_28px_70px_-34px_rgba(15,43,61,.22)] p-10 text-center mono text-sm text-muted">加载中…</div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pb-10 border-t border-line pt-6">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <p class="mono text-[11px] text-muted">© 2026 OTTOHUB · 我阐述你的梦</p>
+      <a href="/admin.html" class="mono text-[11px] text-muted hover:text-ink transition-colors duration-200">ADMIN</a>
+    </div>
+    <div class="mt-3 flex items-center gap-2.5 flex-wrap">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener"
+         class="mono text-[11px] text-muted hover:text-ink transition-colors duration-200">晋ICP备2025053135号-1</a>
+      <span class="mono text-[11px] text-muted">·</span>
+      <span class="mono text-[11px] text-muted">请遵守国家法律法规，文明上网，共同维护清朗网络空间</span>
+    </div>
+  </footer>
+
+  <script>
+    const ICONS = {
+      android: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3.5a1.5 1.5 0 003 0V19h2v3.5a1.5 1.5 0 003 0V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7a1.5 1.5 0 003 0v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7a1.5 1.5 0 003 0v-7c0-.83-.67-1.5-1.5-1.5zM4.5 6L6 2h12l1.5 4h-15z"/></svg>`,
+      apple: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.14.41-2.35 1.05-3.11z"/></svg>`,
+      mac: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2.5"/><path d="M9 21h6M12 17v4"/></svg>`,
+      windows: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5A1.5 1.5 0 014.5 4H10a1.5 1.5 0 011.5 1.5V10A1.5 1.5 0 0110 11.5H4.5A1.5 1.5 0 013 10V5.5zm9.5 0A1.5 1.5 0 0114 4h5.5A1.5 1.5 0 0121 5.5V10a1.5 1.5 0 01-1.5 1.5H14a1.5 1.5 0 01-1.5-1.5V5.5zM3 14.5A1.5 1.5 0 014.5 13H10a1.5 1.5 0 011.5 1.5V19A1.5 1.5 0 0110 20.5H4.5A1.5 1.5 0 013 19v-4.5zm9.5 0A1.5 1.5 0 0114 13h5.5a1.5 1.5 0 011.5 1.5V19a1.5 1.5 0 01-1.5 1.5H14a1.5 1.5 0 01-1.5-1.5v-4.5z"/></svg>`
+    };
+
+    const PRODUCTS = {
+      hub: {
+        name: 'OTTOhub',
+        accent: 'hub',
+        meta: 'ANDROID · IOS',
+        platforms: [
+          { id: 'android', label: 'Android', icon: 'android', dataKey: 'android', urlField: 'url' },
+          { id: 'ios', label: 'iOS', icon: 'apple', dataKey: 'ios', urlField: 'url' }
+        ],
+        changelogTabs: [
+          { id: 'android', label: 'Android' },
+          { id: 'ios', label: 'iOS' }
+        ]
+      },
+      media: {
+        name: 'OTTOMEDIA',
+        accent: 'media',
+        meta: 'IOS · MACOS · ANDROID · WINDOWS',
+        platforms: [
+          { id: 'ios', label: 'iOS', icon: 'apple', group: 'apple', urlField: 'iosUrl' },
+          { id: 'macos', label: 'macOS', icon: 'mac', group: 'apple', urlField: 'macUrl' },
+          { id: 'android', label: 'Android', icon: 'android', group: 'cross', urlField: 'androidUrl' },
+          { id: 'windows', label: 'Windows', icon: 'windows', group: 'cross', urlField: 'windowsUrl' }
+        ],
+        changelogTabs: [
+          { id: 'apple', label: 'iOS · macOS' },
+          { id: 'cross', label: 'Android · Windows' }
+        ]
+      }
+    };
+
+    const ACCENT = {
+      hub: {
+        dot: 'bg-hub',
+        text: 'text-hub-strong',
+        tile: 'bg-hub/10 text-hub-strong',
+        btn: 'bg-hub hover:bg-hub-strong',
+        hoverBorder: 'hover:border-hub/50',
+        ring: 'ring-hub/20'
+      },
+      media: {
+        dot: 'bg-media',
+        text: 'text-media-strong',
+        tile: 'bg-media/10 text-media-strong',
+        btn: 'bg-media hover:bg-media-strong',
+        hoverBorder: 'hover:border-media/50',
+        ring: 'ring-media/20'
+      }
+    };
+
+    let appData = null;
+    let activeProduct = 'hub';
+    let activeGroupByProduct = { hub: 'android', media: 'apple' };
+
+    function groupSource(groupId) {
+      return (groupId === 'apple' || groupId === 'cross')
+        ? (appData.ottomedia || {})[groupId]
+        : appData[groupId];
+    }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function platformCard(plat, accent, i) {
+      const src = plat.group ? (appData.ottomedia || {})[plat.group] : appData[plat.dataKey];
+      const version = src && src.version ? 'v' + src.version : '待发布';
+      const size = src && src.size ? ' · ' + src.size : '';
+      const url = src ? src[plat.urlField] : null;
+      const a = ACCENT[accent];
+      const btn = url
+        ? `<a href="${esc(url)}" target="_blank" rel="noopener" class="flex-shrink-0 inline-flex items-center gap-1.5 ${a.btn} text-white text-[13px] font-medium pl-4 pr-3.5 py-2 rounded-xl transition-colors duration-200 cursor-pointer">
+             <span>下载</span>
+             <svg class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-y-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 21h16"/></svg>
+           </a>`
+        : `<span class="flex-shrink-0 mono text-[10px] uppercase tracking-widest text-muted bg-paper border border-line px-3 py-2 rounded-xl">待发布</span>`;
+      return `
+        <div class="rise group bg-white border border-line rounded-2xl p-5 ${a.hoverBorder} transition-all duration-300 hover:shadow-[0_18px_36px_-22px_rgba(15,43,61,.3)]" style="animation-delay:${i * 80}ms">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 flex-shrink-0 rounded-xl ${a.tile} flex items-center justify-center">${ICONS[plat.icon]}</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-[15px] leading-tight">${plat.label}</div>
+              <div class="mono text-[11px] text-muted mt-0.5 truncate">${version}${size}</div>
+            </div>
+            ${btn}
+          </div>
+        </div>`;
+    }
+
+    function timelineItem(entry, i, accent, a) {
+      return `
+        <div class="relative pl-7 pb-8 last:pb-0">
+          <span class="absolute left-0 top-1.5 w-2.5 h-2.5 -translate-x-1/2 rounded-full ${i === 0 ? a.dot + ' ring-4 ' + a.ring : 'bg-line'}"></span>
+          <div class="rise rounded-2xl border border-line bg-white p-5 transition-colors duration-200 ${a.hoverBorder}" style="animation-delay:${i * 70}ms">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="font-heading text-lg font-semibold ${a.text}">v${esc(entry.version)}</span>
+              <span class="mono text-[11px] text-muted">${esc(entry.date || '')}</span>
+              ${i === 0 ? '<span class="mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-cta/10 text-cta">最新</span>' : ''}
+            </div>
+            <p class="mt-2.5 text-sm text-ink-soft leading-relaxed whitespace-pre-wrap">${esc(entry.content)}</p>
+          </div>
+        </div>`;
+    }
+
+    function renderPanel() {
+      if (!appData) return;
+      const product = PRODUCTS[activeProduct];
+      const a = ACCENT[product.accent];
+      const groupId = activeGroupByProduct[activeProduct];
+      const group = groupSource(groupId) || {};
+      const changelog = group.changelog || [];
+      const panel = document.getElementById('product-panel');
+
+      panel.innerHTML = `
+        <div class="rounded-3xl bg-white border border-line shadow-[0_28px_70px_-34px_rgba(15,43,61,.22)] overflow-hidden">
+          <div class="flex items-center justify-between px-6 sm:px-8 py-4 border-b border-line">
+            <div class="flex items-center gap-3">
+              <span class="w-2 h-2 rounded-full ${a.dot}"></span>
+              <span class="font-heading text-xl italic font-semibold">${product.name}</span>
+              <span class="hidden sm:block mono text-[10px] uppercase tracking-[0.25em] text-muted">下载 · 更新日志</span>
+            </div>
+            <span class="mono text-[11px] text-muted hidden md:block">${product.meta}</span>
+          </div>
+
+          <div class="grid lg:grid-cols-5">
+            <!-- 下载 -->
+            <div class="lg:col-span-2 p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-line bg-paper/60">
+              <div class="mono text-[10px] tracking-[0.3em] uppercase text-muted mb-5">01 · 选择平台下载</div>
+              <div class="space-y-3">
+                ${product.platforms.map((p, i) => platformCard(p, product.accent, i)).join('')}
+              </div>
+            </div>
+
+            <!-- 更新日志 -->
+            <div class="lg:col-span-3 p-6 sm:p-8">
+              <div class="flex items-center justify-between mb-7 flex-wrap gap-3">
+                <div class="mono text-[10px] tracking-[0.3em] uppercase text-muted">02 · 更新日志</div>
+                <div class="flex bg-paper border border-line rounded-xl p-1">
+                  ${product.changelogTabs.map(t => `
+                    <button type="button" data-group="${t.id}" class="cl-tab px-3.5 py-1.5 rounded-lg mono text-[11px] uppercase tracking-wider text-muted cursor-pointer ${t.id === groupId ? 'active' : ''}">${t.label}</button>
+                  `).join('')}
+                </div>
+              </div>
+              <div>
+                ${changelog.length > 0
+                  ? changelog.map((entry, i) => timelineItem(entry, i, product.accent, a)).join('')
+                  : '<p class="mono text-sm text-muted text-center py-16">暂无更新日志</p>'}
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+      panel.querySelectorAll('.cl-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          panel.querySelectorAll('.cl-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          activeGroupByProduct[activeProduct] = tab.dataset.group;
+          renderPanel();
+        });
+      });
+    }
+
+    function switchProduct(key) {
+      activeProduct = key;
+      const color = key === 'hub' ? '#0EA5E9' : '#10B981';
+      document.querySelectorAll('.product-tab').forEach(btn => {
+        const on = btn.dataset.product === key;
+        btn.classList.toggle('active', on);
+        btn.style.setProperty('--c-accent', color);
+        const chip = btn.querySelector('.current-chip');
+        if (chip) chip.style.opacity = on ? '1' : '0';
+      });
+      renderPanel();
+    }
+
+    document.querySelectorAll('.product-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchProduct(btn.dataset.product));
+    });
+
+    async function loadData() {
+      try {
+        const res = await fetch('/api/data');
+        appData = await res.json();
+        renderPanel();
+      } catch (e) {
+        console.error('Failed to load data:', e);
+        document.getElementById('product-panel').innerHTML =
+          '<div class="rounded-3xl bg-white border border-line p-10 text-center mono text-sm text-muted">数据加载失败，请刷新重试</div>';
+      }
+    }
+
+    switchProduct('hub');
+    loadData();
+  </script>
+
+</body>
+</html>

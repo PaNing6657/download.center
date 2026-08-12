@@ -1,0 +1,14 @@
+{
+    "android": {
+        "version": "1.0.0",
+        "url": "",
+        "size": ""
+    },
+    "ios": {
+        "version": "1.0.0",
+        "url": "",
+        "size": ""
+    },
+    "changelog": [],
+    "admin_password": "$2a$10$8RVbShfaGcmlz1.dvFPQk.VjywwXaIGQw1upbs4zhFphaY0CsGwMW"
+}

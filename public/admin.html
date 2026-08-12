@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTTOhub · 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,400;1,6..96,500;1,6..96,600&family=Jost:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['"Bodoni Moda"', 'serif'],
+            body: ['Jost', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'monospace'],
+          },
+          colors: {
+            ink: '#0F2B3D',
+            'ink-soft': '#47566B',
+            muted: '#8593A7',
+            line: '#E4E9F0',
+            paper: '#F6F7F9',
+            hub: '#0EA5E9',
+            'hub-strong': '#0369A1',
+            cta: '#F97316',
+            'cta-strong': '#EA580C',
+            media: '#10B981',
+            'media-strong': '#047857',
+            danger: '#EF4444',
+            'danger-strong': '#DC2626',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    .dots-bg {
+      background-image: radial-gradient(rgba(15, 43, 61, .10) 1px, transparent 1px);
+      background-size: 22px 22px;
+      mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 100%);
+    }
+    .noise {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .admin-tab {
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .admin-tab.active {
+      background: #0F2B3D;
+      color: #fff;
+      box-shadow: 0 4px 12px -4px rgba(15, 43, 61, .35);
+    }
+  </style>
+</head>
+<body class="bg-paper text-ink font-body min-h-screen antialiased overflow-x-hidden">
+
+  <!-- 环境背景 -->
+  <div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
+    <div class="absolute inset-0 dots-bg"></div>
+    <div class="absolute -top-48 -left-48 w-[40rem] h-[40rem] rounded-full bg-hub/10 blur-3xl"></div>
+    <div class="absolute top-[30%] -right-48 w-[34rem] h-[34rem] rounded-full bg-media/10 blur-3xl"></div>
+    <div class="absolute inset-0 noise opacity-[0.035]"></div>
+  </div>
+
+  <!-- 顶栏 -->
+  <header class="max-w-6xl mx-auto px-6 sm:px-8 pt-8 flex items-center justify-between">
+    <a href="/" class="flex items-baseline gap-3">
+      <span class="font-heading text-2xl font-semibold italic tracking-tight">OTTO<span class="text-hub">hub</span></span>
+      <span class="mono text-[10px] tracking-[0.3em] uppercase text-muted">Administration · 管理后台</span>
+    </a>
+    <button id="logout-btn" class="mono text-[11px] tracking-[0.2em] uppercase text-muted hover:text-danger transition-colors duration-200 cursor-pointer">退出登录</button>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 sm:px-8 pb-16">
+
+    <!-- 登录 -->
+    <section id="login-section" class="hidden max-w-sm mx-auto mt-24">
+      <div class="rounded-3xl bg-white border border-line p-8 shadow-[0_28px_70px_-34px_rgba(15,43,61,.22)]">
+        <div class="text-center mb-8">
+          <div class="font-heading text-4xl italic font-semibold">OTTO<span class="text-hub">hub</span></div>
+          <p class="mono text-[10px] tracking-[0.3em] uppercase text-muted mt-2">管理员登录</p>
+        </div>
+        <form id="login-form" class="space-y-4">
+          <input type="password" id="password" placeholder="管理员密码" required autocomplete="current-password"
+                 class="w-full bg-paper border border-line rounded-xl px-4 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+          <button type="submit"
+                  class="w-full bg-cta hover:bg-cta-strong text-white font-medium py-3 rounded-xl transition-colors duration-200 cursor-pointer tracking-[0.15em]">
+            登 录
+          </button>
+          <p id="login-error" class="text-danger text-sm text-center hidden">密码错误，请重试</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- 控制台 -->
+    <section id="dashboard-section" class="hidden mt-12">
+
+      <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <h2 class="font-heading text-3xl sm:text-4xl font-semibold italic">配置中心</h2>
+        <div class="flex bg-white border border-line rounded-2xl p-1.5 shadow-sm">
+          <button type="button" data-admin-product="hub" class="admin-tab active px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOhub</button>
+          <button type="button" data-admin-product="media" class="admin-tab px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOMEDIA</button>
+        </div>
+      </div>
+
+      <form id="data-form">
+        <!-- ============ OTTOhub ============ -->
+        <div id="hub-panel" class="admin-panel grid lg:grid-cols-2 gap-6">
+
+          <!-- Android -->
+          <div class="bg-white border border-line rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-hub/10 text-hub-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3.5a1.5 1.5 0 003 0V19h2v3.5a1.5 1.5 0 003 0V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7a1.5 1.5 0 003 0v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7a1.5 1.5 0 003 0v-7c0-.83-.67-1.5-1.5-1.5zM4.5 6L6 2h12l1.5 4h-15z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">Android</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-muted">OTTOHUB</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">版本号</label>
+                <input type="text" id="android-version" placeholder="如 2.4.6"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">文件大小</label>
+                <input type="text" id="android-size" placeholder="如 78 MB"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">强制更新最低版本</label>
+                <input type="text" id="android-force-min" placeholder="低于此版本强制更新"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-cta transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-3">
+              <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">下载链接</label>
+              <input type="text" id="android-url" placeholder="https://…"
+                     class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+            </div>
+            <div class="mt-6 pt-5 border-t border-line">
+              <div class="mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">更新日志</div>
+              <button type="button" id="add-android-cl"
+                      class="w-full border-2 border-dashed border-line hover:border-hub text-muted hover:text-hub-strong font-medium py-2.5 rounded-xl transition-colors duration-200 cursor-pointer text-sm">
+                + 添加 Android 更新日志
+              </button>
+              <div id="android-cl-list" class="space-y-3 mt-3"></div>
+            </div>
+          </div>
+
+            <!-- iOS -->
+            <div class="bg-white border border-line rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-hub/10 text-hub-strong flex items-center justify-center">
+                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.14.41-2.35 1.05-3.11z"/></svg>
+                </div>
+                <div>
+                  <h3 class="font-heading text-lg font-semibold">iOS</h3>
+                  <p class="mono text-[10px] uppercase tracking-[0.2em] text-muted">OTTOHUB</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-3">
+                <div>
+                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">版本号</label>
+                  <input type="text" id="ios-version" placeholder="如 2.4.1"
+                         class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+                </div>
+                <div>
+                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">文件大小</label>
+                  <input type="text" id="ios-size" placeholder="如 65 MB"
+                         class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+                </div>
+                <div>
+                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">强制更新最低版本</label>
+                  <input type="text" id="ios-force-min" placeholder="低于此版本强制更新"
+                         class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-cta transition-colors duration-200">
+                </div>
+              </div>
+              <div class="mt-3">
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">下载链接</label>
+                <input type="text" id="ios-url" placeholder="https://…"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+              </div>
+              <div class="mt-6 pt-5 border-t border-line">
+                <div class="mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">更新日志</div>
+                <button type="button" id="add-ios-cl"
+                        class="w-full border-2 border-dashed border-line hover:border-hub text-muted hover:text-hub-strong font-medium py-2.5 rounded-xl transition-colors duration-200 cursor-pointer text-sm">
+                  + 添加 iOS 更新日志
+                </button>
+                <div id="ios-cl-list" class="space-y-3 mt-3"></div>
+              </div>
+            </div>
+
+            <!-- 法律文档：用户协议 / 隐私政策（OTTOhub 全平台共用内容） -->
+            <div class="lg:col-span-2 bg-white border border-line rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-hub/10 text-hub-strong flex items-center justify-center">
+                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+                </div>
+                <div>
+                  <h3 class="font-heading text-lg font-semibold">法律文档</h3>
+                  <p class="mono text-[10px] uppercase tracking-[0.2em] text-muted">OTTOHUB · 用户协议 / 隐私政策（全平台共用）</p>
+                </div>
+              </div>
+              <div class="grid lg:grid-cols-2 gap-3">
+                <div>
+                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">用户协议内容</label>
+                  <textarea id="hub-user-agreement" rows="10" placeholder="输入用户协议内容，支持换行…"
+                            class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200 leading-relaxed resize-y"></textarea>
+                </div>
+                <div>
+                  <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">隐私政策内容</label>
+                  <textarea id="hub-privacy-policy" rows="10" placeholder="输入隐私政策内容，支持换行…"
+                            class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200 leading-relaxed resize-y"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <!-- ============ OTTOMEDIA ============ -->
+        <div id="media-panel" class="admin-panel hidden grid lg:grid-cols-2 gap-6">
+
+          <!-- Apple 生态：iOS / macOS 共用版本号 -->
+          <div class="bg-white border border-media/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-media/10 text-media-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.14.41-2.35 1.05-3.11z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">Apple 生态</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-media-strong">iOS · macOS 共用版本号</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">共用版本号</label>
+                <input type="text" id="apple-version" placeholder="如 1.0.0"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">文件大小</label>
+                <input type="text" id="apple-size" placeholder="如 45 MB"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">强制更新最低版本</label>
+                <input type="text" id="apple-force-min" placeholder="低于此版本强制更新"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-cta transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-3 space-y-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">iOS 下载链接</label>
+                <input type="text" id="apple-ios-url" placeholder="https://…"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">macOS 下载链接</label>
+                <input type="text" id="apple-mac-url" placeholder="https://…"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-6 pt-5 border-t border-line">
+              <div class="mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">更新日志（iOS / macOS 共用）</div>
+              <button type="button" id="add-apple-cl"
+                      class="w-full border-2 border-dashed border-line hover:border-media text-muted hover:text-media-strong font-medium py-2.5 rounded-xl transition-colors duration-200 cursor-pointer text-sm">
+                + 添加 Apple 更新日志
+              </button>
+              <div id="apple-cl-list" class="space-y-3 mt-3"></div>
+            </div>
+          </div>
+
+          <!-- Android / Windows 共用版本号 -->
+          <div class="bg-white border border-media/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-media/10 text-media-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5A1.5 1.5 0 014.5 4H10a1.5 1.5 0 011.5 1.5V10A1.5 1.5 0 0110 11.5H4.5A1.5 1.5 0 013 10V5.5zm9.5 0A1.5 1.5 0 0114 4h5.5A1.5 1.5 0 0121 5.5V10a1.5 1.5 0 01-1.5 1.5H14a1.5 1.5 0 01-1.5-1.5V5.5zM3 14.5A1.5 1.5 0 014.5 13H10a1.5 1.5 0 011.5 1.5V19A1.5 1.5 0 0110 20.5H4.5A1.5 1.5 0 013 19v-4.5zm9.5 0A1.5 1.5 0 0114 13h5.5a1.5 1.5 0 011.5 1.5V19a1.5 1.5 0 01-1.5 1.5H14a1.5 1.5 0 01-1.5-1.5v-4.5z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">跨平台</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-media-strong">Android · Windows 共用版本号</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">共用版本号</label>
+                <input type="text" id="cross-version" placeholder="如 1.0.0"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">文件大小</label>
+                <input type="text" id="cross-size" placeholder="如 60 MB"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">强制更新最低版本</label>
+                <input type="text" id="cross-force-min" placeholder="低于此版本强制更新"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-cta transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-3 space-y-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">Android 下载链接</label>
+                <input type="text" id="cross-android-url" placeholder="https://…"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">Windows 下载链接</label>
+                <input type="text" id="cross-windows-url" placeholder="https://…"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-6 pt-5 border-t border-line">
+              <div class="mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">更新日志（Android / Windows 共用）</div>
+              <button type="button" id="add-cross-cl"
+                      class="w-full border-2 border-dashed border-line hover:border-media text-muted hover:text-media-strong font-medium py-2.5 rounded-xl transition-colors duration-200 cursor-pointer text-sm">
+                + 添加跨平台更新日志
+              </button>
+              <div id="cross-cl-list" class="space-y-3 mt-3"></div>
+            </div>
+          </div>
+
+          <!-- 法律文档：用户协议 / 隐私政策（OTTOMEDIA 全平台共用内容） -->
+          <div class="lg:col-span-2 bg-white border border-media/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-media/10 text-media-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">法律文档</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-media-strong">OTTOMEDIA · 用户协议 / 隐私政策（全平台共用）</p>
+              </div>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">用户协议内容</label>
+                <textarea id="media-user-agreement" rows="10" placeholder="输入用户协议内容，支持换行…"
+                          class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200 leading-relaxed resize-y"></textarea>
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">隐私政策内容</label>
+                <textarea id="media-privacy-policy" rows="10" placeholder="输入隐私政策内容，支持换行…"
+                          class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-media transition-colors duration-200 leading-relaxed resize-y"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 保存栏 -->
+        <div class="sticky bottom-4 mt-8 rounded-2xl bg-white/90 backdrop-blur border border-line shadow-[0_18px_44px_-24px_rgba(15,43,61,.35)] p-4 flex items-center gap-3 flex-wrap">
+          <button type="submit"
+                  class="bg-cta hover:bg-cta-strong text-white font-medium py-2.5 px-7 rounded-xl transition-colors duration-200 cursor-pointer tracking-wide">
+            保存全部更改
+          </button>
+          <a href="/" target="_blank"
+             class="px-6 py-2.5 rounded-xl border border-line bg-paper hover:border-hub text-ink font-medium transition-colors duration-200 cursor-pointer">
+            预览前台
+          </a>
+          <span id="save-status" class="mono text-xs text-muted ml-auto"></span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // 四个更新日志编辑组：OTTOhub 的 android/ios，OTTOMEDIA 的 apple/cross
+    const CHANGELOG_GROUPS = ['android', 'ios', 'apple', 'cross'];
+    const clState = { android: [], ios: [], apple: [], cross: [] };
+
+    const loginSection = document.getElementById('login-section');
+    const dashboard = document.getElementById('dashboard-section');
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/admin/check');
+        const data = await res.json();
+        if (data.authenticated) {
+          loginSection.classList.add('hidden');
+          dashboard.classList.remove('hidden');
+          await loadAdminData();
+        } else {
+          loginSection.classList.remove('hidden');
+          dashboard.classList.add('hidden');
+        }
+      } catch (e) {
+        loginSection.classList.remove('hidden');
+        dashboard.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      if (res.ok) {
+        document.getElementById('login-error').classList.add('hidden');
+        checkAuth();
+      } else {
+        document.getElementById('login-error').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      checkAuth();
+    });
+
+    // ---------- 产品面板切换 ----------
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.adminProduct;
+        document.getElementById('hub-panel').classList.toggle('hidden', key !== 'hub');
+        document.getElementById('media-panel').classList.toggle('hidden', key !== 'media');
+      });
+    });
+
+    // ---------- 更新日志编辑器 ----------
+    function renderChangelogList(key) {
+      const listEl = document.getElementById(key + '-cl-list');
+      const entries = clState[key] || [];
+      if (entries.length === 0) {
+        listEl.innerHTML = '<p class="mono text-xs text-muted text-center py-4">暂无更新日志</p>';
+        return;
+      }
+      listEl.innerHTML = entries.map((entry, i) => `
+        <div class="rounded-xl border border-line bg-paper p-3.5">
+          <div class="grid grid-cols-[1fr_auto_auto] gap-2 items-start">
+            <input type="text" placeholder="版本号" value="${esc(entry.version)}"
+                   data-cl-key="${key}" data-cl-index="${i}" data-field="version"
+                   class="cl-input w-full bg-white border border-line rounded-lg px-3 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">
+            <input type="date" value="${esc(entry.date)}"
+                   data-cl-key="${key}" data-cl-index="${i}" data-field="date"
+                   class="cl-input w-36 bg-white border border-line rounded-lg px-3 py-2 text-sm text-muted focus:outline-none focus:border-hub transition-colors duration-200">
+            <button type="button" class="text-muted hover:text-danger transition-colors duration-200 cursor-pointer mt-1.5" data-cl-key="${key}" data-cl-index="${i}">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          </div>
+          <textarea rows="3" placeholder="更新内容"
+                    data-cl-key="${key}" data-cl-index="${i}" data-field="content"
+                    class="cl-input mt-2 w-full bg-white border border-line rounded-lg px-3 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-hub transition-colors duration-200">${esc(entry.content)}</textarea>
+        </div>
+      `).join('');
+
+      listEl.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const arr = collectChangelog(key);
+          arr.splice(parseInt(btn.dataset.clIndex), 1);
+          clState[key] = arr;
+          renderChangelogList(key);
+        });
+      });
+    }
+
+    function collectChangelog(key) {
+      const inputs = document.querySelectorAll(`.cl-input[data-cl-key="${key}"]`);
+      const byIndex = {};
+      inputs.forEach(el => {
+        const idx = el.dataset.clIndex;
+        byIndex[idx] = byIndex[idx] || {};
+        byIndex[idx][el.dataset.field] = el.value;
+      });
+      return Object.keys(byIndex).sort((a, b) => a - b).map(i => byIndex[i]);
+    }
+
+    CHANGELOG_GROUPS.forEach(key => {
+      document.getElementById('add-' + key + '-cl').addEventListener('click', () => {
+        const arr = collectChangelog(key);
+        arr.unshift({ version: '', date: '', content: '' });
+        clState[key] = arr;
+        renderChangelogList(key);
+      });
+    });
+
+    // ---------- 数据加载与保存 ----------
+    async function loadAdminData() {
+      const res = await fetch('/api/data');
+      const data = await res.json();
+      const om = data.ottomedia || {};
+      const legal = data.legal || {};
+
+      document.getElementById('android-version').value = data.android.version || '';
+      document.getElementById('android-size').value = data.android.size || '';
+      document.getElementById('android-force-min').value = data.android.forceMinVersion || '';
+      document.getElementById('android-url').value = data.android.url || '';
+
+      document.getElementById('ios-version').value = data.ios.version || '';
+      document.getElementById('ios-size').value = data.ios.size || '';
+      document.getElementById('ios-force-min').value = data.ios.forceMinVersion || '';
+      document.getElementById('ios-url').value = data.ios.url || '';
+
+      document.getElementById('apple-version').value = (om.apple || {}).version || '';
+      document.getElementById('apple-size').value = (om.apple || {}).size || '';
+      document.getElementById('apple-force-min').value = (om.apple || {}).forceMinVersion || '';
+      document.getElementById('apple-ios-url').value = (om.apple || {}).iosUrl || '';
+      document.getElementById('apple-mac-url').value = (om.apple || {}).macUrl || '';
+
+      document.getElementById('cross-version').value = (om.cross || {}).version || '';
+      document.getElementById('cross-size').value = (om.cross || {}).size || '';
+      document.getElementById('cross-force-min').value = (om.cross || {}).forceMinVersion || '';
+      document.getElementById('cross-android-url').value = (om.cross || {}).androidUrl || '';
+      document.getElementById('cross-windows-url').value = (om.cross || {}).windowsUrl || '';
+
+      document.getElementById('hub-user-agreement').value = (legal.hub || {}).userAgreement || '';
+      document.getElementById('hub-privacy-policy').value = (legal.hub || {}).privacyPolicy || '';
+      document.getElementById('media-user-agreement').value = (legal.media || {}).userAgreement || '';
+      document.getElementById('media-privacy-policy').value = (legal.media || {}).privacyPolicy || '';
+
+      clState.android = data.android.changelog || [];
+      clState.ios = data.ios.changelog || [];
+      clState.apple = (om.apple || {}).changelog || [];
+      clState.cross = (om.cross || {}).changelog || [];
+      CHANGELOG_GROUPS.forEach(key => renderChangelogList(key));
+    }
+
+    document.getElementById('data-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById('save-status');
+      const payload = {
+        android: {
+          version: document.getElementById('android-version').value,
+          size: document.getElementById('android-size').value,
+          forceMinVersion: document.getElementById('android-force-min').value,
+          url: document.getElementById('android-url').value,
+          changelog: collectChangelog('android')
+        },
+        ios: {
+          version: document.getElementById('ios-version').value,
+          size: document.getElementById('ios-size').value,
+          forceMinVersion: document.getElementById('ios-force-min').value,
+          url: document.getElementById('ios-url').value,
+          changelog: collectChangelog('ios')
+        },
+        ottomedia: {
+          apple: {
+            version: document.getElementById('apple-version').value,
+            size: document.getElementById('apple-size').value,
+            forceMinVersion: document.getElementById('apple-force-min').value,
+            iosUrl: document.getElementById('apple-ios-url').value,
+            macUrl: document.getElementById('apple-mac-url').value,
+            changelog: collectChangelog('apple')
+          },
+          cross: {
+            version: document.getElementById('cross-version').value,
+            size: document.getElementById('cross-size').value,
+            forceMinVersion: document.getElementById('cross-force-min').value,
+            androidUrl: document.getElementById('cross-android-url').value,
+            windowsUrl: document.getElementById('cross-windows-url').value,
+            changelog: collectChangelog('cross')
+          }
+        },
+        legal: {
+          hub: {
+            userAgreement: document.getElementById('hub-user-agreement').value,
+            privacyPolicy: document.getElementById('hub-privacy-policy').value
+          },
+          media: {
+            userAgreement: document.getElementById('media-user-agreement').value,
+            privacyPolicy: document.getElementById('media-privacy-policy').value
+          }
+        }
+      };
+      try {
+        const res = await fetch('/api/admin/data', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          statusEl.textContent = '✓ 保存成功';
+          statusEl.className = 'mono text-xs text-media ml-auto';
+        } else {
+          const err = await res.json();
+          statusEl.textContent = '保存失败: ' + (err.error || '未知错误');
+          statusEl.className = 'mono text-xs text-danger ml-auto';
+        }
+      } catch (err) {
+        statusEl.textContent = '网络错误，请重试';
+        statusEl.className = 'mono text-xs text-danger ml-auto';
+      }
+      setTimeout(() => {
+        statusEl.textContent = '';
+        statusEl.className = 'mono text-xs text-muted ml-auto';
+      }, 3000);
+    });
+
+    checkAuth();
+  </script>
+
+</body>
+</html>
