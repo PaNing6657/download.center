@@ -57,6 +57,69 @@
       color: #fff;
       box-shadow: 0 4px 12px -4px rgba(15, 43, 61, .35);
     }
+    .md-mode-btn {
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .md-mode-btn.active {
+      background: #fff;
+      color: #0F2B3D;
+      box-shadow: 0 1px 3px rgba(15, 43, 61, .12);
+    }
+    /* 法律文档 Markdown 渲染样式 */
+    .md-body { font-size: 14px; line-height: 1.8; color: #47566B; }
+    .md-body > :first-child { margin-top: 0; }
+    .md-body h1, .md-body h2, .md-body h3 {
+      font-family: "Bodoni Moda", serif;
+      font-weight: 600;
+      color: #0F2B3D;
+      margin: 1.4em 0 .5em;
+      line-height: 1.3;
+    }
+    .md-body h1 { font-size: 1.55rem; }
+    .md-body h2 { font-size: 1.3rem; }
+    .md-body h3 { font-size: 1.12rem; }
+    .md-body p { margin: .6em 0; }
+    .md-body ul, .md-body ol { margin: .6em 0; padding-left: 1.5em; }
+    .md-body ul { list-style: disc; }
+    .md-body ol { list-style: decimal; }
+    .md-body li { margin: .25em 0; }
+    .md-body code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12.5px;
+      background: #F6F7F9;
+      border: 1px solid #E4E9F0;
+      border-radius: 5px;
+      padding: .12em .35em;
+    }
+    .md-body pre {
+      background: #0F2B3D;
+      color: #E4E9F0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: .9em 0;
+    }
+    .md-body pre code {
+      background: none;
+      border: none;
+      color: inherit;
+      padding: 0;
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+    .md-body a { color: #0369A1; text-decoration: underline; word-break: break-all; }
+    .md-body img { max-width: 100%; border-radius: 12px; margin: .8em 0; }
+    .md-body blockquote {
+      border-left: 3px solid #E4E9F0;
+      padding-left: 1em;
+      color: #8593A7;
+      margin: .8em 0;
+    }
+    .md-body hr { border: none; border-top: 1px solid #E4E9F0; margin: 1.3em 0; }
+    .md-body table { border-collapse: collapse; margin: .9em 0; width: 100%; font-size: 13.5px; }
+    .md-body th, .md-body td { border: 1px solid #E4E9F0; padding: 7px 11px; text-align: left; }
+    .md-body th { background: #F6F7F9; color: #0F2B3D; font-weight: 600; }
+    .md-body tr:nth-child(even) td { background: #FAFBFC; }
   </style>
 </head>
 <body class="bg-paper text-ink font-body min-h-screen antialiased overflow-x-hidden">
@@ -376,6 +439,31 @@
     </section>
   </main>
 
+  <!-- 全屏 Markdown 编辑器 -->
+  <div id="fs-editor" class="hidden fixed inset-0 z-50 bg-paper/95 backdrop-blur">
+    <div class="h-full flex flex-col p-4 sm:p-6">
+      <div class="flex-1 min-h-0 flex flex-col bg-white border border-line rounded-2xl shadow-2xl overflow-hidden">
+        <div class="flex items-center gap-3 px-5 py-3.5 border-b border-line">
+          <span id="fs-title" class="font-heading text-lg italic font-semibold truncate"></span>
+          <span class="mono text-[10px] uppercase tracking-[0.2em] text-muted hidden sm:block">Markdown 编辑</span>
+          <div class="ml-auto flex items-center gap-2">
+            <div class="flex bg-paper border border-line rounded-lg p-0.5">
+              <button type="button" id="fs-mode-edit" class="fs-mode-btn active px-3.5 py-1.5 rounded-md mono text-[11px] uppercase tracking-wider text-muted cursor-pointer">编辑</button>
+              <button type="button" id="fs-mode-preview" class="fs-mode-btn px-3.5 py-1.5 rounded-md mono text-[11px] uppercase tracking-wider text-muted cursor-pointer">预览</button>
+            </div>
+            <button type="button" id="fs-close"
+                    class="bg-ink hover:bg-ink-soft text-white font-medium px-4 py-1.5 rounded-lg text-sm transition-colors duration-200 cursor-pointer">
+              完成
+            </button>
+          </div>
+        </div>
+        <textarea id="fs-textarea"
+                  class="flex-1 min-h-0 w-full resize-none px-6 py-5 font-mono text-sm leading-relaxed text-ink bg-transparent focus:outline-none"></textarea>
+        <div id="fs-preview" class="flex-1 min-h-0 overflow-y-auto px-6 py-5 md-body hidden"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // 四个更新日志编辑组：OTTOhub 的 android/ios，OTTOMEDIA 的 apple/cross
     const CHANGELOG_GROUPS = ['android', 'ios', 'apple', 'cross'];
@@ -612,6 +700,169 @@
         statusEl.className = 'mono text-xs text-muted ml-auto';
       }, 3000);
     });
+
+    // ---------- 法律文档：Markdown 渲染 + 编辑/预览 + 全屏 ----------
+    function inlineMd(s) {
+      return s
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
+        .replace(/~~([^~]+)~~/g, '<del>$1</del>')
+        .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, alt, src) => `<img src="${src.replace(/&amp;/g, '&')}" alt="${alt}">`)
+        .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => `<a href="${u.replace(/&amp;/g, '&')}" target="_blank" rel="noopener">${t}</a>`);
+    }
+
+    function renderMarkdown(src) {
+      const lines = esc(src || '').replace(/\r\n/g, '\n').split('\n');
+      let html = '';
+      let i = 0;
+      const isFence = s => s.trim().startsWith('```');
+      const isList = s => /^\s*[-*+]\s+/.test(s) || /^\s*\d+\.\s+/.test(s);
+
+      while (i < lines.length) {
+        const line = lines[i];
+        // 代码块
+        if (isFence(line)) {
+          const buf = [];
+          i++;
+          while (i < lines.length && !isFence(lines[i])) { buf.push(lines[i]); i++; }
+          i++;
+          html += '<pre><code>' + buf.join('\n') + '</code></pre>';
+          continue;
+        }
+        // 标题
+        const hm = line.match(/^(#{1,3})\s+(.*)$/);
+        if (hm) {
+          const lv = hm[1].length;
+          html += `<h${lv}>${inlineMd(hm[2])}</h${lv}>`;
+          i++;
+          continue;
+        }
+        // 表格
+        if (/^\|.+\|$/.test(line) && lines[i + 1] && /^\|[\s:|-]+\|$/.test(lines[i + 1])) {
+          const head = line.slice(1, -1).split('|').map(c => inlineMd(c.trim()));
+          const rows = [];
+          i += 2;
+          while (i < lines.length && /^\|.+\|$/.test(lines[i])) {
+            rows.push(lines[i].slice(1, -1).split('|').map(c => inlineMd(c.trim())));
+            i++;
+          }
+          html += '<table><thead><tr>' + head.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>' +
+            rows.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+          continue;
+        }
+        // 列表
+        if (isList(line)) {
+          const ordered = /^\s*\d+\.\s+/.test(line);
+          const items = [];
+          while (i < lines.length && isList(lines[i])) {
+            const item = lines[i].replace(/^\s*[-*+]\s+/, '').replace(/^\s*\d+\.\s+/, '');
+            items.push('<li>' + inlineMd(item) + '</li>');
+            i++;
+          }
+          html += (ordered ? '<ol>' : '<ul>') + items.join('') + (ordered ? '</ol>' : '</ul>');
+          continue;
+        }
+        // 引用
+        if (/^&gt;\s?/.test(line)) {
+          const buf = [];
+          while (i < lines.length && /^&gt;\s?/.test(lines[i])) { buf.push(inlineMd(lines[i].replace(/^&gt;\s?/, ''))); i++; }
+          html += '<blockquote>' + buf.join('<br>') + '</blockquote>';
+          continue;
+        }
+        // 分割线
+        if (/^([-*_])\1{2,}$/.test(line.trim())) { html += '<hr>'; i++; continue; }
+        // 空行
+        if (line.trim() === '') { i++; continue; }
+        // 段落
+        const buf = [];
+        while (i < lines.length && lines[i].trim() !== '' && !isFence(lines[i]) && !/^#{1,3}\s/.test(lines[i])) {
+          buf.push(lines[i]);
+          i++;
+        }
+        html += '<p>' + inlineMd(buf.join('<br>')) + '</p>';
+      }
+      return html;
+    }
+
+    function mdPreviewHtml(text) {
+      const html = renderMarkdown(text);
+      return html || '<p class="text-muted text-center py-12">暂无内容</p>';
+    }
+
+    const FS_STATE = { id: null };
+
+    function setupEditor(id, title) {
+      const ta = document.getElementById(id);
+      const bar = document.createElement('div');
+      bar.className = 'flex items-center justify-between mb-2';
+      bar.innerHTML = `
+        <div class="flex bg-paper border border-line rounded-lg p-0.5">
+          <button type="button" data-md-mode="edit" class="md-mode-btn active px-3 py-1 rounded-md mono text-[11px] uppercase tracking-wider text-muted cursor-pointer">编辑</button>
+          <button type="button" data-md-mode="preview" class="md-mode-btn px-3 py-1 rounded-md mono text-[11px] uppercase tracking-wider text-muted cursor-pointer">预览</button>
+        </div>
+        <button type="button" class="md-fs-btn mono text-[11px] uppercase tracking-wider text-muted hover:text-ink flex items-center gap-1.5 cursor-pointer transition-colors duration-200">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+          全屏
+        </button>`;
+      const preview = document.createElement('div');
+      preview.className = 'md-preview hidden md-body min-h-[15rem] max-h-[24rem] overflow-y-auto bg-white border border-line rounded-xl px-4 py-3';
+      ta.parentNode.insertBefore(bar, ta);
+      ta.parentNode.insertBefore(preview, ta.nextSibling);
+
+      const setMode = mode => {
+        bar.querySelectorAll('.md-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mdMode === mode));
+        ta.classList.toggle('hidden', mode !== 'edit');
+        preview.classList.toggle('hidden', mode !== 'preview');
+        if (mode === 'preview') preview.innerHTML = mdPreviewHtml(ta.value);
+      };
+
+      bar.querySelectorAll('.md-mode-btn').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mdMode)));
+      bar.querySelector('.md-fs-btn').addEventListener('click', () => openFullscreen(id, title));
+    }
+
+    function openFullscreen(id, title) {
+      FS_STATE.id = id;
+      document.getElementById('fs-title').textContent = title;
+      const fsTa = document.getElementById('fs-textarea');
+      fsTa.value = document.getElementById(id).value;
+      setFsMode('edit');
+      document.getElementById('fs-editor').classList.remove('hidden');
+      fsTa.focus();
+      fsTa.setSelectionRange(fsTa.value.length, fsTa.value.length);
+    }
+
+    function setFsMode(mode) {
+      document.getElementById('fs-mode-edit').classList.toggle('active', mode === 'edit');
+      document.getElementById('fs-mode-preview').classList.toggle('active', mode === 'preview');
+      document.getElementById('fs-textarea').classList.toggle('hidden', mode !== 'edit');
+      document.getElementById('fs-preview').classList.toggle('hidden', mode !== 'preview');
+      if (mode === 'preview') document.getElementById('fs-preview').innerHTML = mdPreviewHtml(document.getElementById('fs-textarea').value);
+    }
+
+    function closeFullscreen() {
+      if (!FS_STATE.id) return;
+      const ta = document.getElementById(FS_STATE.id);
+      ta.value = document.getElementById('fs-textarea').value;
+      const preview = ta.nextElementSibling;
+      if (preview && preview.classList.contains('md-preview') && !preview.classList.contains('hidden')) {
+        preview.innerHTML = mdPreviewHtml(ta.value);
+      }
+      document.getElementById('fs-editor').classList.add('hidden');
+      FS_STATE.id = null;
+    }
+
+    document.getElementById('fs-mode-edit').addEventListener('click', () => setFsMode('edit'));
+    document.getElementById('fs-mode-preview').addEventListener('click', () => setFsMode('preview'));
+    document.getElementById('fs-close').addEventListener('click', closeFullscreen);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !document.getElementById('fs-editor').classList.contains('hidden')) closeFullscreen();
+    });
+
+    setupEditor('hub-user-agreement', 'OTTOhub · 用户协议');
+    setupEditor('hub-privacy-policy', 'OTTOhub · 隐私政策');
+    setupEditor('media-user-agreement', 'OTTOMEDIA · 用户协议');
+    setupEditor('media-privacy-policy', 'OTTOMEDIA · 隐私政策');
 
     checkAuth();
   </script>
