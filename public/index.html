@@ -89,6 +89,14 @@
       color: #0F2B3D;
       box-shadow: 0 1px 3px rgba(15, 43, 61, .12);
     }
+    .cl-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #C9D4E0 transparent;
+    }
+    .cl-scroll::-webkit-scrollbar { width: 6px; }
+    .cl-scroll::-webkit-scrollbar-track { background: transparent; }
+    .cl-scroll::-webkit-scrollbar-thumb { background: #C9D4E0; border-radius: 999px; }
+    .cl-scroll::-webkit-scrollbar-thumb:hover { background: #9FB0C2; }
   </style>
 </head>
 <body class="bg-paper text-ink font-body min-h-screen antialiased overflow-x-hidden">
@@ -234,7 +242,7 @@
       return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function platformCard(plat, accent, i) {
+    function platformCard(plat, accent) {
       const src = plat.group ? (appData.ottomedia || {})[plat.group] : appData[plat.dataKey];
       const version = src && src.version ? 'v' + src.version : '待发布';
       const size = src && src.size ? ' · ' + src.size : '';
@@ -247,7 +255,7 @@
            </a>`
         : `<span class="flex-shrink-0 mono text-[10px] uppercase tracking-widest text-muted bg-paper border border-line px-3 py-2 rounded-xl">待发布</span>`;
       return `
-        <div class="rise group bg-white border border-line rounded-2xl p-5 ${a.hoverBorder} transition-all duration-300 hover:shadow-[0_18px_36px_-22px_rgba(15,43,61,.3)]" style="animation-delay:${i * 80}ms">
+        <div class="group bg-white border border-line rounded-2xl p-5 ${a.hoverBorder} transition-all duration-300 hover:shadow-[0_18px_36px_-22px_rgba(15,43,61,.3)]">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 flex-shrink-0 rounded-xl ${a.tile} flex items-center justify-center">${ICONS[plat.icon]}</div>
             <div class="flex-1 min-w-0">
@@ -263,7 +271,7 @@
       return `
         <div class="relative pl-7 pb-8 last:pb-0">
           <span class="absolute left-0 top-1.5 w-2.5 h-2.5 -translate-x-1/2 rounded-full ${i === 0 ? a.dot + ' ring-4 ' + a.ring : 'bg-line'}"></span>
-          <div class="rise rounded-2xl border border-line bg-white p-5 transition-colors duration-200 ${a.hoverBorder}" style="animation-delay:${i * 70}ms">
+          <div class="rounded-2xl border border-line bg-white p-5 transition-colors duration-200 ${a.hoverBorder}">
             <div class="flex items-center gap-2.5 flex-wrap">
               <span class="font-heading text-lg font-semibold ${a.text}">v${esc(entry.version)}</span>
               <span class="mono text-[11px] text-muted">${esc(entry.date || '')}</span>
@@ -299,7 +307,7 @@
             <div class="lg:col-span-2 p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-line bg-paper/60">
               <div class="mono text-[10px] tracking-[0.3em] uppercase text-muted mb-5">01 · 选择平台下载</div>
               <div class="space-y-3">
-                ${product.platforms.map((p, i) => platformCard(p, product.accent, i)).join('')}
+                ${product.platforms.map(p => platformCard(p, product.accent)).join('')}
               </div>
             </div>
 
@@ -313,7 +321,7 @@
                   `).join('')}
                 </div>
               </div>
-              <div>
+              <div class="cl-scroll max-h-[30rem] overflow-y-auto overscroll-contain pr-1">
                 ${changelog.length > 0
                   ? changelog.map((entry, i) => timelineItem(entry, i, product.accent, a)).join('')
                   : '<p class="mono text-sm text-muted text-center py-16">暂无更新日志</p>'}
