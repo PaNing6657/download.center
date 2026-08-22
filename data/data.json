@@ -117,19 +117,19 @@
     },
     "ottomedia": {
         "apple": {
-            "version": "1",
-            "iosUrl": "1",
-            "macUrl": "1",
-            "size": "1",
-            "forceMinVersion": "1",
+            "version": "",
+            "iosUrl": "",
+            "macUrl": "",
+            "size": "",
+            "forceMinVersion": "",
             "changelog": []
         },
         "cross": {
-            "version": "1",
-            "androidUrl": "1",
-            "windowsUrl": "1",
-            "size": "1",
-            "forceMinVersion": "1",
+            "version": "",
+            "androidUrl": "",
+            "windowsUrl": "",
+            "size": "",
+            "forceMinVersion": "",
             "changelog": []
         }
     },
