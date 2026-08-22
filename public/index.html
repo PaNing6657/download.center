@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OTTOhub · OTTOMEDIA - 下载中心</title>
+  <title>OTTOhub · OTTOMEDIA · OTTOhub静画 - 下载中心</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,8 @@
             'cta-strong': '#EA580C',
             media: '#10B981',
             'media-strong': '#047857',
+            jinghua: '#8B5CF6',
+            'jinghua-strong': '#6D28D9',
           }
         }
       }
@@ -106,6 +108,7 @@
     <div class="absolute inset-0 dots-bg"></div>
     <div class="absolute -top-48 -left-48 w-[40rem] h-[40rem] rounded-full bg-hub/10 blur-3xl"></div>
     <div class="absolute top-[30%] -right-48 w-[34rem] h-[34rem] rounded-full bg-media/10 blur-3xl"></div>
+    <div class="absolute bottom-0 -left-40 w-[30rem] h-[30rem] rounded-full bg-jinghua/10 blur-3xl"></div>
     <div class="absolute inset-0 noise opacity-[0.035]"></div>
   </div>
 
@@ -125,12 +128,13 @@
       <h1 class="rise mt-5 font-heading font-semibold italic tracking-tight leading-[0.95] text-6xl sm:text-7xl lg:text-8xl" style="animation-delay:.12s">
         <span class="block">OTTO<span class="text-hub">hub</span></span>
         <span class="block text-ink/55">OTTO<span class="text-media">MEDIA</span></span>
+        <span class="block text-ink/40">OTTO<span class="text-jinghua">静画</span></span>
       </h1>
 
       <p class="rise mt-7 text-ink-soft text-lg max-w-md leading-relaxed" style="animation-delay:.2s">我阐述你的梦</p>
 
       <!-- 产品切换 -->
-      <div class="rise mt-12 grid sm:grid-cols-2 gap-4 max-w-2xl" style="animation-delay:.28s">
+      <div class="rise mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl" style="animation-delay:.28s">
         <button type="button" data-product="hub" class="product-tab relative text-left rounded-2xl p-5 cursor-pointer">
           <span class="absolute -top-2.5 left-5 mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-0.5 rounded-full bg-hub opacity-0 transition-opacity duration-200 current-chip">当前</span>
           <div class="flex items-center justify-between">
@@ -147,6 +151,15 @@
             <svg class="w-5 h-5 text-muted transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg>
           </div>
           <p class="mt-2 mono text-[10px] tracking-[0.22em] uppercase text-muted">iOS · macOS · Android · Windows</p>
+        </button>
+
+        <button type="button" data-product="jinghua" class="product-tab relative text-left rounded-2xl p-5 cursor-pointer">
+          <span class="absolute -top-2.5 left-5 mono text-[10px] uppercase tracking-[0.2em] text-white px-2.5 py-0.5 rounded-full bg-jinghua opacity-0 transition-opacity duration-200 current-chip">当前</span>
+          <div class="flex items-center justify-between">
+            <span class="font-heading text-2xl font-semibold italic">OTTOhub静画</span>
+            <svg class="w-5 h-5 text-muted transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6l6 6-6 6"/></svg>
+          </div>
+          <p class="mt-2 mono text-[10px] tracking-[0.22em] uppercase text-muted">Android · iOS</p>
         </button>
       </div>
     </section>
@@ -206,6 +219,19 @@
           { id: 'apple', label: 'iOS · macOS' },
           { id: 'cross', label: 'Android · Windows' }
         ]
+      },
+      jinghua: {
+        name: 'OTTOhub静画',
+        accent: 'jinghua',
+        meta: 'ANDROID · IOS',
+        platforms: [
+          { id: 'android', label: 'Android', icon: 'android', jinghua: 'android', urlField: 'url' },
+          { id: 'ios', label: 'iOS', icon: 'apple', jinghua: 'ios', urlField: 'url' }
+        ],
+        changelogTabs: [
+          { id: 'jinghua_android', label: 'Android' },
+          { id: 'jinghua_ios', label: 'iOS' }
+        ]
       }
     };
 
@@ -225,25 +251,42 @@
         btn: 'bg-media hover:bg-media-strong',
         hoverBorder: 'hover:border-media/50',
         ring: 'ring-media/20'
+      },
+      jinghua: {
+        dot: 'bg-jinghua',
+        text: 'text-jinghua-strong',
+        tile: 'bg-jinghua/10 text-jinghua-strong',
+        btn: 'bg-jinghua hover:bg-jinghua-strong',
+        hoverBorder: 'hover:border-jinghua/50',
+        ring: 'ring-jinghua/20'
       }
     };
 
     let appData = null;
     let activeProduct = 'hub';
-    let activeGroupByProduct = { hub: 'android', media: 'apple' };
+    let activeGroupByProduct = { hub: 'android', media: 'apple', jinghua: 'jinghua_android' };
+
+    // OTTOhub静画 的日志 tab → data.jinghua 内部分组
+    const JINGHUA_TABS = { jinghua_android: 'android', jinghua_ios: 'ios' };
 
     function groupSource(groupId) {
-      return (groupId === 'apple' || groupId === 'cross')
-        ? (appData.ottomedia || {})[groupId]
-        : appData[groupId];
+      if (groupId === 'apple' || groupId === 'cross') return (appData.ottomedia || {})[groupId];
+      if (JINGHUA_TABS[groupId]) return (appData.jinghua || {})[JINGHUA_TABS[groupId]];
+      return appData[groupId];
     }
 
     function esc(s) {
       return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    function platformSource(plat) {
+      if (plat.group) return (appData.ottomedia || {})[plat.group];
+      if (plat.jinghua) return (appData.jinghua || {})[plat.jinghua];
+      return appData[plat.dataKey];
+    }
+
     function platformCard(plat, accent) {
-      const src = plat.group ? (appData.ottomedia || {})[plat.group] : appData[plat.dataKey];
+      const src = platformSource(plat);
       const version = src && src.version ? 'v' + src.version : '待发布';
       const size = src && src.size ? ' · ' + src.size : '';
       const url = src ? src[plat.urlField] : null;
@@ -342,7 +385,7 @@
 
     function switchProduct(key) {
       activeProduct = key;
-      const color = key === 'hub' ? '#0EA5E9' : '#10B981';
+      const color = key === 'hub' ? '#0EA5E9' : key === 'jinghua' ? '#8B5CF6' : '#10B981';
       document.querySelectorAll('.product-tab').forEach(btn => {
         const on = btn.dataset.product === key;
         btn.classList.toggle('active', on);

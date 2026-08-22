@@ -24,19 +24,32 @@ const OTTOMEDIA_DEFAULTS = {
   cross: { version: '', androidUrl: '', windowsUrl: '', size: '', forceMinVersion: '', changelog: [] }
 };
 
-// 产品级法律文档链接默认结构：hub 组（OTTOhub）、media 组（OTTOMEDIA）
-const LEGAL_DEFAULTS = {
-  hub: { userAgreement: '', privacyPolicy: '' },
-  media: { userAgreement: '', privacyPolicy: '' }
+// OTTOhub静画 默认结构：android / ios 两组，结构与 OTTOhub 一致
+const JINGHUA_DEFAULTS = {
+  android: { version: '', url: '', size: '', forceMinVersion: '', changelog: [] },
+  ios: { version: '', url: '', size: '', forceMinVersion: '', changelog: [] }
 };
 
-// 更新检测 API 平台 → 版本分组。四大版本分组：
+// 产品级法律文档链接默认结构：hub 组（OTTOhub）、media 组（OTTOMEDIA）、jinghua 组（OTTOhub静画）
+const LEGAL_DEFAULTS = {
+  hub: { userAgreement: '', privacyPolicy: '' },
+  media: { userAgreement: '', privacyPolicy: '' },
+  jinghua: { userAgreement: '', privacyPolicy: '' }
+};
+
+// 更新检测 API 平台 → 版本分组。六大版本分组：
 //   hub_android（OTTOhub 安卓）、hub_ios（OTTOhub iOS）
+//   jinghua_android（OTTOhub静画 安卓）、jinghua_ios（OTTOhub静画 iOS）
 //   media_apple（OTTOMEDIA iOS/macOS 共用版本）、media_win（OTTOMEDIA Windows/安卓 共用版本）
 // 媒体组返回本组全部下载链接（urls），由设备自取，确保不串组
 const HUB_PLATFORMS = {
   hub_android: { dataKey: 'android' },
   hub_ios: { dataKey: 'ios' }
+};
+
+const JINGHUA_PLATFORMS = {
+  jinghua_android: { group: 'android' },
+  jinghua_ios: { group: 'ios' }
 };
 
 const MEDIA_GROUP_PLATFORMS = {
@@ -61,16 +74,20 @@ function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 4), 'utf-8');
 }
 
-// 补齐缺失的默认结构（旧数据文件没有 ottomedia/legal 字段时）
+// 补齐缺失的默认结构（旧数据文件没有 ottomedia/jinghua/legal 字段时）
 function normalizeData(data) {
   data.android = data.android || {};
   data.ios = data.ios || {};
   data.ottomedia = data.ottomedia || {};
   data.ottomedia.apple = { ...OTTOMEDIA_DEFAULTS.apple, ...data.ottomedia.apple };
   data.ottomedia.cross = { ...OTTOMEDIA_DEFAULTS.cross, ...data.ottomedia.cross };
+  data.jinghua = data.jinghua || {};
+  data.jinghua.android = { ...JINGHUA_DEFAULTS.android, ...data.jinghua.android };
+  data.jinghua.ios = { ...JINGHUA_DEFAULTS.ios, ...data.jinghua.ios };
   data.legal = data.legal || {};
   data.legal.hub = { ...LEGAL_DEFAULTS.hub, ...data.legal.hub };
   data.legal.media = { ...LEGAL_DEFAULTS.media, ...data.legal.media };
+  data.legal.jinghua = { ...LEGAL_DEFAULTS.jinghua, ...data.legal.jinghua };
   return data;
 }
 
@@ -136,6 +153,9 @@ app.get('/api/data', (req, res) => {
     if (HUB_PLATFORMS[platform]) {
       cfg = data[HUB_PLATFORMS[platform].dataKey];
     }
+    if (JINGHUA_PLATFORMS[platform]) {
+      cfg = data.jinghua[JINGHUA_PLATFORMS[platform].group];
+    }
     if (OTTOMEDIA_PLATFORMS[platform]) {
       const o = OTTOMEDIA_PLATFORMS[platform];
       cfg = data.ottomedia[o.group];
@@ -167,7 +187,7 @@ app.get('/api/legal', (req, res) => {
   const data = normalizeData(readData());
   const { product } = req.query;
   if (!product || !data.legal[product]) {
-    return res.status(400).json({ error: 'Invalid product, use "hub" or "media"' });
+    return res.status(400).json({ error: 'Invalid product, use "hub", "media" or "jinghua"' });
   }
   res.json({
     product,
@@ -198,7 +218,7 @@ app.get('/api/admin/check', (req, res) => {
 });
 
 app.put('/api/admin/data', requireAuth, (req, res) => {
-  const { android, ios, ottomedia, legal } = req.body;
+  const { android, ios, ottomedia, jinghua, legal } = req.body;
   const data = normalizeData(readData());
   applyPlatformPatch(data.android, android);
   applyPlatformPatch(data.ios, ios);
@@ -206,9 +226,14 @@ app.put('/api/admin/data', requireAuth, (req, res) => {
     applyPlatformPatch(data.ottomedia.apple, ottomedia.apple);
     applyPlatformPatch(data.ottomedia.cross, ottomedia.cross);
   }
+  if (jinghua) {
+    applyPlatformPatch(data.jinghua.android, jinghua.android);
+    applyPlatformPatch(data.jinghua.ios, jinghua.ios);
+  }
   if (legal) {
     applyPlatformPatch(data.legal.hub, legal.hub);
     applyPlatformPatch(data.legal.media, legal.media);
+    applyPlatformPatch(data.legal.jinghua, legal.jinghua);
   }
   writeData(data);
   const { admin_password, ...publicData } = data;

@@ -29,6 +29,8 @@
             'cta-strong': '#EA580C',
             media: '#10B981',
             'media-strong': '#047857',
+            jinghua: '#8B5CF6',
+            'jinghua-strong': '#6D28D9',
             danger: '#EF4444',
             'danger-strong': '#DC2626',
           }
@@ -129,6 +131,7 @@
     <div class="absolute inset-0 dots-bg"></div>
     <div class="absolute -top-48 -left-48 w-[40rem] h-[40rem] rounded-full bg-hub/10 blur-3xl"></div>
     <div class="absolute top-[30%] -right-48 w-[34rem] h-[34rem] rounded-full bg-media/10 blur-3xl"></div>
+    <div class="absolute bottom-0 -left-40 w-[30rem] h-[30rem] rounded-full bg-jinghua/10 blur-3xl"></div>
     <div class="absolute inset-0 noise opacity-[0.035]"></div>
   </div>
 
@@ -170,6 +173,7 @@
         <div class="flex bg-white border border-line rounded-2xl p-1.5 shadow-sm">
           <button type="button" data-admin-product="hub" class="admin-tab active px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOhub</button>
           <button type="button" data-admin-product="media" class="admin-tab px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOMEDIA</button>
+          <button type="button" data-admin-product="jinghua" class="admin-tab px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">OTTOhub静画</button>
           <button type="button" data-admin-product="legal" class="admin-tab px-4 py-2 rounded-xl font-heading italic font-semibold text-sm text-muted hover:text-ink cursor-pointer">法律文档</button>
         </div>
       </div>
@@ -369,6 +373,96 @@
           </div>
         </div>
 
+        <!-- ============ OTTOhub静画 ============ -->
+        <div id="jinghua-panel" class="admin-panel hidden grid lg:grid-cols-2 gap-6">
+
+          <!-- Android -->
+          <div class="bg-white border border-jinghua/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-jinghua/10 text-jinghua-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18c0 .55.45 1 1 1h1v3.5a1.5 1.5 0 003 0V19h2v3.5a1.5 1.5 0 003 0V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7a1.5 1.5 0 003 0v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7a1.5 1.5 0 003 0v-7c0-.83-.67-1.5-1.5-1.5zM4.5 6L6 2h12l1.5 4h-15z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">Android</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-jinghua-strong">OTTOHUB静画</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">版本号</label>
+                <input type="text" id="jinghua-android-version" placeholder="如 1.0.0"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">文件大小</label>
+                <input type="text" id="jinghua-android-size" placeholder="如 45 MB"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">强制更新最低版本</label>
+                <input type="text" id="jinghua-android-force-min" placeholder="低于此版本强制更新"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-cta transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-3">
+              <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">下载链接</label>
+              <input type="text" id="jinghua-android-url" placeholder="https://…"
+                     class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200">
+            </div>
+            <div class="mt-6 pt-5 border-t border-line">
+              <div class="mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">更新日志</div>
+              <button type="button" id="add-jinghua_android-cl"
+                      class="w-full border-2 border-dashed border-line hover:border-jinghua text-muted hover:text-jinghua-strong font-medium py-2.5 rounded-xl transition-colors duration-200 cursor-pointer text-sm">
+                + 添加 Android 更新日志
+              </button>
+              <div id="jinghua_android-cl-list" class="space-y-3 mt-3"></div>
+            </div>
+          </div>
+
+          <!-- iOS -->
+          <div class="bg-white border border-jinghua/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)]">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-jinghua/10 text-jinghua-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.14.41-2.35 1.05-3.11z"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">iOS</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-jinghua-strong">OTTOHUB静画</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">版本号</label>
+                <input type="text" id="jinghua-ios-version" placeholder="如 1.0.0"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">文件大小</label>
+                <input type="text" id="jinghua-ios-size" placeholder="如 40 MB"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200">
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">强制更新最低版本</label>
+                <input type="text" id="jinghua-ios-force-min" placeholder="低于此版本强制更新"
+                       class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-cta transition-colors duration-200">
+              </div>
+            </div>
+            <div class="mt-3">
+              <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">下载链接</label>
+              <input type="text" id="jinghua-ios-url" placeholder="https://…"
+                     class="w-full bg-paper border border-line rounded-xl px-3 py-2.5 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200">
+            </div>
+            <div class="mt-6 pt-5 border-t border-line">
+              <div class="mono text-[10px] uppercase tracking-[0.2em] text-muted mb-3">更新日志</div>
+              <button type="button" id="add-jinghua_ios-cl"
+                      class="w-full border-2 border-dashed border-line hover:border-jinghua text-muted hover:text-jinghua-strong font-medium py-2.5 rounded-xl transition-colors duration-200 cursor-pointer text-sm">
+                + 添加 iOS 更新日志
+              </button>
+              <div id="jinghua_ios-cl-list" class="space-y-3 mt-3"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- ============ 法律文档 ============ -->
         <div id="legal-panel" class="admin-panel hidden grid lg:grid-cols-2 gap-6">
 
@@ -421,6 +515,31 @@
               </div>
             </div>
           </div>
+
+          <!-- OTTOhub静画 法律文档 -->
+          <div class="bg-white border border-jinghua/40 rounded-3xl p-6 sm:p-7 shadow-[0_1px_2px_rgba(15,43,61,.04)] lg:col-span-2">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-jinghua/10 text-jinghua-strong flex items-center justify-center">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+              </div>
+              <div>
+                <h3 class="font-heading text-lg font-semibold">法律文档</h3>
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-jinghua-strong">OTTOHUB静画 · 用户协议 / 隐私政策</p>
+              </div>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-3">
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">用户协议内容</label>
+                <textarea id="jinghua-user-agreement" rows="10" placeholder="输入用户协议内容"
+                          class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200 leading-relaxed resize-y"></textarea>
+              </div>
+              <div>
+                <label class="block mono text-[10px] uppercase tracking-[0.15em] text-muted mb-1.5">隐私政策内容</label>
+                <textarea id="jinghua-privacy-policy" rows="10" placeholder="输入隐私政策内容"
+                          class="w-full bg-paper border border-line rounded-xl px-3.5 py-3 text-sm text-ink placeholder-muted focus:outline-none focus:border-jinghua transition-colors duration-200 leading-relaxed resize-y"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 保存栏 -->
@@ -465,9 +584,9 @@
   </div>
 
   <script>
-    // 四个更新日志编辑组：OTTOhub 的 android/ios，OTTOMEDIA 的 apple/cross
-    const CHANGELOG_GROUPS = ['android', 'ios', 'apple', 'cross'];
-    const clState = { android: [], ios: [], apple: [], cross: [] };
+    // 六个更新日志编辑组：OTTOhub 的 android/ios，OTTOMEDIA 的 apple/cross，OTTOhub静画 的 jinghua_android/jinghua_ios
+    const CHANGELOG_GROUPS = ['android', 'ios', 'apple', 'cross', 'jinghua_android', 'jinghua_ios'];
+    const clState = { android: [], ios: [], apple: [], cross: [], jinghua_android: [], jinghua_ios: [] };
 
     const loginSection = document.getElementById('login-section');
     const dashboard = document.getElementById('dashboard-section');
@@ -523,6 +642,7 @@
         const key = btn.dataset.adminProduct;
         document.getElementById('hub-panel').classList.toggle('hidden', key !== 'hub');
         document.getElementById('media-panel').classList.toggle('hidden', key !== 'media');
+        document.getElementById('jinghua-panel').classList.toggle('hidden', key !== 'jinghua');
         document.getElementById('legal-panel').classList.toggle('hidden', key !== 'legal');
       });
     });
@@ -594,6 +714,7 @@
       const res = await fetch('/api/data');
       const data = await res.json();
       const om = data.ottomedia || {};
+      const jh = data.jinghua || {};
       const legal = data.legal || {};
 
       document.getElementById('android-version').value = data.android.version || '';
@@ -618,15 +739,29 @@
       document.getElementById('cross-android-url').value = (om.cross || {}).androidUrl || '';
       document.getElementById('cross-windows-url').value = (om.cross || {}).windowsUrl || '';
 
+      document.getElementById('jinghua-android-version').value = (jh.android || {}).version || '';
+      document.getElementById('jinghua-android-size').value = (jh.android || {}).size || '';
+      document.getElementById('jinghua-android-force-min').value = (jh.android || {}).forceMinVersion || '';
+      document.getElementById('jinghua-android-url').value = (jh.android || {}).url || '';
+
+      document.getElementById('jinghua-ios-version').value = (jh.ios || {}).version || '';
+      document.getElementById('jinghua-ios-size').value = (jh.ios || {}).size || '';
+      document.getElementById('jinghua-ios-force-min').value = (jh.ios || {}).forceMinVersion || '';
+      document.getElementById('jinghua-ios-url').value = (jh.ios || {}).url || '';
+
       document.getElementById('hub-user-agreement').value = (legal.hub || {}).userAgreement || '';
       document.getElementById('hub-privacy-policy').value = (legal.hub || {}).privacyPolicy || '';
       document.getElementById('media-user-agreement').value = (legal.media || {}).userAgreement || '';
       document.getElementById('media-privacy-policy').value = (legal.media || {}).privacyPolicy || '';
+      document.getElementById('jinghua-user-agreement').value = (legal.jinghua || {}).userAgreement || '';
+      document.getElementById('jinghua-privacy-policy').value = (legal.jinghua || {}).privacyPolicy || '';
 
       clState.android = data.android.changelog || [];
       clState.ios = data.ios.changelog || [];
       clState.apple = (om.apple || {}).changelog || [];
       clState.cross = (om.cross || {}).changelog || [];
+      clState.jinghua_android = (jh.android || {}).changelog || [];
+      clState.jinghua_ios = (jh.ios || {}).changelog || [];
       CHANGELOG_GROUPS.forEach(key => renderChangelogList(key));
     }
 
@@ -666,6 +801,22 @@
             changelog: collectChangelog('cross')
           }
         },
+        jinghua: {
+          android: {
+            version: document.getElementById('jinghua-android-version').value,
+            size: document.getElementById('jinghua-android-size').value,
+            forceMinVersion: document.getElementById('jinghua-android-force-min').value,
+            url: document.getElementById('jinghua-android-url').value,
+            changelog: collectChangelog('jinghua_android')
+          },
+          ios: {
+            version: document.getElementById('jinghua-ios-version').value,
+            size: document.getElementById('jinghua-ios-size').value,
+            forceMinVersion: document.getElementById('jinghua-ios-force-min').value,
+            url: document.getElementById('jinghua-ios-url').value,
+            changelog: collectChangelog('jinghua_ios')
+          }
+        },
         legal: {
           hub: {
             userAgreement: document.getElementById('hub-user-agreement').value,
@@ -674,6 +825,10 @@
           media: {
             userAgreement: document.getElementById('media-user-agreement').value,
             privacyPolicy: document.getElementById('media-privacy-policy').value
+          },
+          jinghua: {
+            userAgreement: document.getElementById('jinghua-user-agreement').value,
+            privacyPolicy: document.getElementById('jinghua-privacy-policy').value
           }
         }
       };
@@ -863,6 +1018,8 @@
     setupEditor('hub-privacy-policy', 'OTTOhub · 隐私政策');
     setupEditor('media-user-agreement', 'OTTOMEDIA · 用户协议');
     setupEditor('media-privacy-policy', 'OTTOMEDIA · 隐私政策');
+    setupEditor('jinghua-user-agreement', 'OTTOhub静画 · 用户协议');
+    setupEditor('jinghua-privacy-policy', 'OTTOhub静画 · 隐私政策');
 
     checkAuth();
   </script>
